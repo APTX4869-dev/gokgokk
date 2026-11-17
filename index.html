@@ -1023,61 +1023,58 @@ function enableMusic() {
 
   if (!m) return;
 
-  m.pause();
-  m.currentTime = 0;
+  m.loop = true;
   m.muted = false;
   m.volume = 0;
+  m.currentTime = 0;
 
-  // Meminta izin playback melalui interaksi pengguna
+  // Mulai audio melalui interaksi tombol pengguna
   m.play().then(() => {
     musicReady = true;
 
-    // Hentikan audio sebelum Nailong muncul
-    m.pause();
-    m.currentTime = 0;
+    // JANGAN pause audio di sini!
+    // Biarkan berjalan senyap sampai kue muncul.
 
     document.getElementById('music-gate').style.display = 'none';
 
-  }).catch(() => {
+  }).catch((error) => {
+    console.warn('Musik gagal diaktifkan:', error);
+
     status.textContent =
-      'Musik belum bisa diaktifkan. Silakan tekan kembali.';
+      'Musik belum aktif. Silakan tekan tombol kembali.';
   });
 }
 
 // Dipanggil saat halaman kue muncul
 function startMusic() {
   const m = document.getElementById('bg-music');
-  if (!m || fadeStarted) return;
 
-  m.loop = true;
+  if (!m || !musicReady || fadeStarted) return;
+
+  // Kembalikan lagu ke detik pertama
   m.currentTime = 0;
   m.volume = 0;
   m.muted = false;
 
-  m.play().then(() => {
-    fadeStarted = true;
+  fadeStarted = true;
 
-    const FADE_MS = 1600;
-    const TARGET_VOL = 0.70;
-    const t0 = performance.now();
+  const FADE_MS = 1600;
+  const TARGET_VOL = 0.70;
+  const t0 = performance.now();
 
-    function step(now) {
-      const progress = Math.min(
-        (now - t0) / FADE_MS, 1
-      );
+  function step(now) {
+    const progress = Math.min(
+      (now - t0) / FADE_MS, 1
+    );
 
-      m.volume = TARGET_VOL * progress;
+    m.volume = TARGET_VOL * progress;
 
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
+    if (progress < 1) {
+      requestAnimationFrame(step);
     }
+  }
 
-    requestAnimationFrame(step);
-
-  }).catch(error => {
-    console.warn('Musik gagal diputar:', error);
-  });
+  requestAnimationFrame(step);
 }
 
 
