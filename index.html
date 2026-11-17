@@ -24,7 +24,7 @@
 
   <style>
     /* ══════════════════════════════════════════════════════════
-       VARIABEL WARNA — Soft Pastel Warm Palette 
+       VARIABEL WARNA — Soft Pastel Warm Palette
     ══════════════════════════════════════════════════════════ */
     :root {
       --pk-50:  #FFF0F5; --pk-100: #FFD6DF;
@@ -522,6 +522,51 @@
 </head>
 <body>
 
+<!-- IZIN AKTIVASI MUSIK -->
+<div id="music-gate" style="
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(255,245,248,0.97);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:24px;
+  text-align:center;
+">
+  <div style="max-width:340px;">
+    <div style="font-size:55px;">🎵💗</div>
+
+    <h2 style="color:#bd668b;">
+      Kasih musik dikit ngk sihh...
+    </h2>
+
+    <p style="color:#795568;line-height:1.7;">
+      Aktifkan musik agar terasa lebih istimewa
+      🤗
+    </p>
+
+    <button onclick="enableMusic()" style="
+      border:none;
+      border-radius:30px;
+      padding:14px 28px;
+      background:#df8eae;
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+    ">
+      Tekan di sini 💕
+    </button>
+
+    <p id="music-status" style="
+      font-size:12px;
+      color:#bd668b;
+      margin-top:12px;
+    "></p>
+  </div>
+</div>
+
 <!-- ══════════════════════════════════════════════════════════
      FIREWORKS CANVAS
      Aktif setelah game Nailong selesai dan TERUS BERTAHAN
@@ -968,44 +1013,73 @@ function sfxBlow() {
    • fade-in lembut 1.6 detik supaya tidak mengagetkan
    • jika autoplay diblokir browser, dicoba lagi saat layar disentuh
 ════════════════════════════════════════════════════════════ */
-let musicOn = false;
 
+let musicReady = false;
+let fadeStarted = false;
+
+function enableMusic() {
+  const m = document.getElementById('bg-music');
+  const status = document.getElementById('music-status');
+
+  if (!m) return;
+
+  m.pause();
+  m.currentTime = 0;
+  m.muted = false;
+  m.volume = 0;
+
+  // Meminta izin playback melalui interaksi pengguna
+  m.play().then(() => {
+    musicReady = true;
+
+    // Hentikan audio sebelum Nailong muncul
+    m.pause();
+    m.currentTime = 0;
+
+    document.getElementById('music-gate').style.display = 'none';
+
+  }).catch(() => {
+    status.textContent =
+      'Musik belum bisa diaktifkan. Silakan tekan kembali.';
+  });
+}
+
+// Dipanggil saat halaman kue muncul
 function startMusic() {
   const m = document.getElementById('bg-music');
-  if (!m || musicOn) return;
-  musicOn = true;
+  if (!m || fadeStarted) return;
 
-  m.loop   = true;   // durasi lagu kurang? ulang terus sampai website selesai
-  m.volume = 0;      // mulai senyap, lalu fade-in
+  m.loop = true;
+  m.currentTime = 0;
+  m.volume = 0;
+  m.muted = false;
 
-  const FADE_MS = 1600, TARGET_VOL = .70;
-  let faded = false;
+  m.play().then(() => {
+    fadeStarted = true;
 
-  function fadeIn() {
-    if (faded) return; faded = true;
+    const FADE_MS = 1600;
+    const TARGET_VOL = 0.70;
     const t0 = performance.now();
-    (function step(now) {
-      const p = Math.min((now - t0) / FADE_MS, 1);
-      m.volume = TARGET_VOL * p;
-      if (p < 1) requestAnimationFrame(step);
-    })(t0);
-  }
 
-  function play() {
-    m.play().then(fadeIn).catch(() => {
-      /* Autoplay ditolak → coba sekali lagi pada sentuhan pertama user */
-      let done = false;
-      const retry = () => {
-        if (done) return; done = true;
-        m.play().then(fadeIn).catch(() => {});
-      };
-      document.addEventListener('pointerdown', retry, { once:true });
-      document.addEventListener('touchstart',  retry, { once:true });
-      document.addEventListener('keydown',     retry, { once:true });
-    });
-  }
-  play();
+    function step(now) {
+      const progress = Math.min(
+        (now - t0) / FADE_MS, 1
+      );
+
+      m.volume = TARGET_VOL * progress;
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    }
+
+    requestAnimationFrame(step);
+
+  }).catch(error => {
+    console.warn('Musik gagal diputar:', error);
+  });
 }
+
 
 /* ════════════════════════════════════════════════════════════
    HALAMAN 1 — LOGIKA MINIGAME NAILONG
