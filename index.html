@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Awwww ghiboo saayangg 🤗😘🌹🤍</title>
+
+  <!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║   HAPPY 19TH BIRTHDAY — REVISED v2                           ║
+  ║   Semua kode dalam satu file HTML                            ║
+  ║                                                              ║
+  ║   BAGIAN YANG PERLU DIEDIT — cari ★★★ EDIT:                 ║
+  ║   1. URL gambar Nailong  → cari: YOUR_NAILONG_IMAGE_URL      ║
+  ║   2. URL lagu romantis   → cari: YOUR_ROMANTIC_SONG_URL      ║
+  ║   3. Teks surat cinta    → cari: LOVE_LETTER_TEXT            ║
+  ║   4. Nama pengirim surat → cari: NAMA_KAMU                   ║
+  ║   5. Foto & caption      → cari: array PHOTOS                ║
+  ╚═══════════════════════════════════════════════════════════════╝
+  -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Nunito:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ══════════════════════════════════════════════════════════
+       VARIABEL WARNA — Soft Pastel Warm Palette
+    ══════════════════════════════════════════════════════════ */
+    :root {
+      --pk-50:  #FFF0F5; --pk-100: #FFD6DF;
+      --pk-300: #FFB7C5; --pk-500: #FF8FAB; --pk-700: #E06080;
+      --cr-50:  #FFFCF8; --cr-100: #FFF8F0;
+      --cr-200: #F9EDE0; --cr-300: #F0D8C0;
+      --gd-100: #FFF3CC; --gd-300: #F0D060;
+      --gd-500: #C9A84C; --gd-700: #9A7B30;
+      --tx-900: #3D2010; --tx-700: #5C3D2E;
+      --tx-500: #8B6355; --tx-300: #C49A8A;
+      --sh-pink: rgba(255,143,171,.35);
+      --sh-gold: rgba(201,168,76,.30);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════════════════════ */
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0;
+      -webkit-tap-highlight-color:transparent; }
+    html,body { width:100%; height:100%; overflow:hidden;
+      font-family:'Nunito','Helvetica Neue',Arial,sans-serif;
+      background:var(--cr-100); touch-action:manipulation; }
+
+    /* ══════════════════════════════════════════════════════════
+       FIREWORKS CANVAS — menyala terus setelah game Nailong.
+       z-index 30 → berada DI ATAS semua halaman (yang z-index 2)
+       tapi pointer-events:none agar tidak menghalangi klik/swipe.
+    ══════════════════════════════════════════════════════════ */
+    #fw-canvas {
+      position:fixed; inset:0; pointer-events:none;
+      z-index:30; opacity:0; transition:opacity 1.1s ease;
+    }
+    #fw-canvas.on { opacity:1; }
+
+    /* ══════════════════════════════════════════════════════════
+       PAGE SYSTEM
+    ══════════════════════════════════════════════════════════ */
+    .page {
+      position:fixed; inset:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      opacity:0; pointer-events:none;
+      transition:opacity .85s ease; z-index:2;
+    }
+    .page.active { opacity:1; pointer-events:all; }
+
+    /* ══════════════════════════════════════════════════════════
+       ★ HALAMAN 1 — MINIGAME NAILONG
+    ══════════════════════════════════════════════════════════ */
+    #p1 { background:linear-gradient(145deg,#FFE8F0 0%,#FFF5F0 55%,#FFE8D6 100%); }
+
+    .bg-deco {
+      position:absolute; pointer-events:none; user-select:none;
+      animation:deco-fl var(--d,4s) ease-in-out infinite var(--dl,0s);
+      opacity:.32; font-size:var(--fs,1.4rem);
+    }
+    @keyframes deco-fl {
+      0%,100% { transform:translateY(0) rotate(var(--r0,-8deg)); }
+      50%     { transform:translateY(-18px) rotate(var(--r1,8deg)); }
+    }
+
+    /* Indikator escape */
+    #indicator {
+      position:fixed;
+      top:max(env(safe-area-inset-top,0px),16px); right:16px;
+      background:rgba(255,214,223,.90);
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      border:1.5px solid var(--gd-300); border-radius:22px;
+      padding:10px 15px; text-align:center;
+      z-index:50; min-width:108px;
+      box-shadow:0 4px 18px var(--sh-pink);
+      animation:ind-pulse 2s ease-in-out infinite;
+    }
+    @keyframes ind-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+    .ind-label { display:block; font-size:.6rem; color:var(--tx-500);
+      text-transform:uppercase; letter-spacing:.6px; margin-bottom:2px; }
+    .ind-count { font-family:'Dancing Script',cursive;
+      font-size:1.25rem; color:var(--tx-700); font-weight:700; }
+
+    /* Instruksi */
+    #instr {
+      position:absolute; top:20%; width:100%; padding:0 36px;
+      font-family:'Dancing Script',cursive;
+      font-size:clamp(1.2rem,4.5vw,1.5rem);
+      color:var(--tx-700); text-align:center; line-height:1.55;
+      pointer-events:none;
+      animation:instr-glow 2.5s ease-in-out infinite;
+    }
+    @keyframes instr-glow {
+      0%,100%{text-shadow:0 0 8px var(--sh-pink)}
+      50%{text-shadow:0 0 24px rgba(255,143,171,.75)}
+    }
+
+    /* Nailong */
+    #nailong {
+      position:absolute; width:160px; height:160px;
+      cursor:pointer; z-index:10;
+      transition:left .52s cubic-bezier(.68,-.55,.27,1.55),
+                 top  .52s cubic-bezier(.68,-.55,.27,1.55);
+    }
+    #nailong-img,#nailong-fb {
+      width:100%; height:100%; border-radius:50%;
+      pointer-events:none; animation:n-float 2.4s ease-in-out infinite;
+    }
+    #nailong-img { object-fit:contain; display:block;
+      filter:drop-shadow(0 10px 24px var(--sh-pink)); }
+    #nailong-fb  { display:none; font-size:7rem;
+      text-align:center; line-height:160px; }
+    @keyframes n-float {
+      0%,100%{transform:translateY(0) scale(1)}
+      50%{transform:translateY(-10px) scale(1.04)}
+    }
+    .n-hit { animation:n-bounce .36s ease forwards !important; }
+    @keyframes n-bounce {
+      0%  {transform:scale(1) rotate(0)}
+      25% {transform:scale(1.4) rotate(-8deg)}
+      65% {transform:scale(.85) rotate(6deg)}
+      100%{transform:scale(1) rotate(0)}
+    }
+    .pop-fx {
+      position:fixed; pointer-events:none; z-index:999;
+      font-size:2rem; user-select:none;
+      animation:pop-anim .85s ease-out forwards;
+    }
+    @keyframes pop-anim {
+      0%  {transform:scale(0) rotate(-15deg); opacity:1}
+      40% {transform:scale(1.4) rotate(8deg);  opacity:1}
+      100%{transform:scale(.8) translateY(-70px); opacity:0}
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       ★ HALAMAN 2 — KUE ULANG TAHUN
+    ══════════════════════════════════════════════════════════ */
+    #p2 { background:linear-gradient(145deg,var(--pk-50) 0%,var(--cr-100) 100%); }
+
+    /* Overlay countdown */
+    #cd-overlay {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      background:rgba(255,240,245,.96);
+      opacity:0; pointer-events:none;
+      transition:opacity .4s ease; z-index:5;
+    }
+    #cd-overlay.show { opacity:1; pointer-events:all; }
+    #countdown {
+      font-family:'Dancing Script',cursive;
+      font-size:clamp(5rem,20vw,7rem);
+      color:var(--gd-500);
+      text-shadow:0 0 32px var(--sh-gold);
+    }
+    .cd-pop { animation:cd-anim .42s ease both; }
+    @keyframes cd-anim {
+      0%  {transform:scale(2.5); opacity:0}
+      100%{transform:scale(1);   opacity:1}
+    }
+
+    .bday-title {
+      font-family:'Dancing Script',cursive;
+      font-size:clamp(1.5rem,5vw,2rem);
+      color:var(--tx-700); text-align:center;
+      margin-bottom:16px; padding:0 24px;
+      text-shadow:0 2px 10px var(--sh-gold);
+      transition:opacity .5s ease;
+    }
+
+    /* Kue SVG */
+    #cake-wrap { position:relative; width:220px; margin:0 auto; }
+    #cake-svg  { width:220px; height:auto; overflow:visible; }
+
+    /* Lilin berkedip */
+    .flame { animation:flicker .25s ease-in-out infinite alternate;
+      transform-origin:50% 100%; }
+    @keyframes flicker {
+      from{transform:scaleX(1) scaleY(1) rotate(-3deg); opacity:1}
+      to  {transform:scaleX(.78) scaleY(1.12) rotate(3deg); opacity:.9}
+    }
+    .flame-off { opacity:0 !important; animation:none !important;
+      transition:opacity .3s ease; }
+
+    /* Kepulan asap */
+    .smoke { opacity:0; }
+    .smoke-on { animation:smoke-puff 1.6s ease-out forwards; }
+    @keyframes smoke-puff {
+      0%  {transform:translateY(0)    scaleX(1);   opacity:.55}
+      100%{transform:translateY(-45px) scaleX(2.5); opacity:0}
+    }
+
+    /* Instruksi bawah kue */
+    .cake-instr {
+      font-size:.88rem; color:var(--tx-500);
+      text-align:center; margin-top:14px;
+      padding:0 36px; line-height:1.8; font-style:italic;
+      transition:opacity .5s ease;
+    }
+
+    /* ═══ Progress bar 10 detik jeda baca ═══ */
+    #read-bar-wrap {
+      width:200px; height:4px;
+      background:rgba(255,183,197,.22);
+      border-radius:3px; margin-top:14px; overflow:hidden;
+    }
+    #read-bar {
+      height:100%; border-radius:3px;
+      background:linear-gradient(90deg,var(--pk-300),var(--gd-500));
+      transform-origin:left;          /* shrinks dari kanan ke kiri */
+      transform:scaleX(1);
+    }
+    @keyframes bar-shrink {
+      from{transform:scaleX(1)} to{transform:scaleX(0)}
+    }
+    #read-hint {
+      font-size:.7rem; color:var(--tx-300);
+      text-align:center; margin-top:6px; font-style:italic;
+      animation:hint-blink 2s ease-in-out infinite;
+    }
+    @keyframes hint-blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* Status mic */
+    #mic-txt { font-size:.78rem; color:var(--tx-300);
+      text-align:center; margin-top:10px; display:none; }
+    #mic-txt.show { display:block; }
+    .mic-wave { display:inline-block;
+      animation:mw .45s ease-in-out infinite alternate; }
+    @keyframes mw { from{transform:scale(1)} to{transform:scale(1.4)} }
+
+    /* Tombol fallback */
+    #fbk-btn {
+      display:none; margin-top:12px;
+      padding:11px 26px;
+      background:linear-gradient(135deg,var(--pk-300),var(--pk-500));
+      color:#fff; border:none; border-radius:32px;
+      font-size:.82rem; cursor:pointer; font-family:'Nunito',sans-serif;
+      box-shadow:0 4px 18px var(--sh-pink);
+    }
+    #fbk-btn.show { display:inline-block; }
+    #fbk-btn:active { transform:scale(.95); }
+
+        /* ... existing code ... */
+
+    /* ══════════════════════════════════════════════════════════
+       ★ HALAMAN 3 — SURAT CINTA (BUKU BERPAGINA)
+    ══════════════════════════════════════════════════════════ */
+    #p3 {
+      background:linear-gradient(145deg,var(--pk-50) 0%,var(--cr-100) 100%);
+      /* flex-start + margin-block:auto pada #p3-scroll = aman di Android:
+         konten tetap di tengah, tapi tidak terpotong saat surat memanjang */
+      justify-content:flex-start;
+      overflow-y:auto; -webkit-overflow-scrolling:touch;
+      padding-top:max(env(safe-area-inset-top,0px),14px);
+      padding-bottom:max(env(safe-area-inset-bottom,0px),14px);
+    }
+    #p3-scroll {
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      width:100%;
+      padding:24px 16px 28px;
+      /* margin-block:auto = centering yang "aman":
+         saat surat memanjang melebihi layar, margin otomatis jadi 0
+         sehingga bagian atas tidak terpotong (penting di Android). */
+      margin-block:auto;
+    }
+
+    /* ═══ PANGGUNG AMPLOP ═══
+       Amplop dibuat position:absolute agar SELALU tepat di tengah layar
+       dan tidak ikut terdorong oleh kartu surat yang masih transparan. */
+    #env-stage {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      z-index:3;
+      transition:opacity .75s ease, transform .85s cubic-bezier(.4,0,.2,1);
+    }
+    /* Setelah surat muncul: amplop mengecil lalu hilang total */
+    #env-stage.gone {
+      opacity:0; transform:scale(.7);
+      pointer-events:none;
+    }
+
+    /* Amplop — muncul dengan sedikit "pop" saat halaman 3 aktif */
+    #env-wrap {
+      width:190px; height:150px; flex-shrink:0;
+      transform-origin:50% 45%;
+    }
+    #p3.active #env-wrap {
+      animation:env-in .85s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes env-in {
+      from { opacity:0; transform:scale(.75) translateY(16px); }
+      to   { opacity:1; transform:scale(1)   translateY(0); }
+    }
+    #env-wrap svg { width:100%; height:100%; overflow:visible; display:block; }
+
+    /* ═══ Flap amplop — berputar terbuka ke atas ═══ */
+    #env-flap {
+      transform-box:view-box;
+      transform-origin:95px 28px;   /* engsel flap di sisi atas amplop */
+      transform:perspective(520px) rotateX(0deg);
+      transition:transform 1.15s cubic-bezier(.55,-.25,.35,1.25);
+    }
+    #env-flap.open { transform:perspective(520px) rotateX(-176deg); }
+    #env-flap .env-seal { transition:opacity .35s ease; }
+    #env-flap.open .env-seal { opacity:0; }
+
+    /* ═══ Love yang naik keluar dari amplop setelah flap terbuka ═══ */
+    #env-heart {
+      transform-box:view-box; transform-origin:95px 72px;
+      opacity:0;
+    }
+    #env-heart.rise {
+      animation:heart-rise 1s cubic-bezier(.3,1.4,.5,1) .3s both;
+    }
+    @keyframes heart-rise {
+      0%   { opacity:0; transform:translateY(18px)  scale(.30); }
+      45%  { opacity:1; transform:translateY(-12px) scale(1.18); }
+      70%  {              transform:translateY(-18px) scale(.98); }
+      100% { opacity:1; transform:translateY(-14px) scale(1.05); }
+    }
+
+    /* ═══ Kertas surat (buku dengan banyak halaman) ═══ */
+    #letter {
+      background:linear-gradient(175deg,var(--cr-50) 0%,var(--cr-100) 100%);
+      border-radius:14px; padding:20px 20px 18px;
+      width:100%; max-width:340px;
+      box-shadow:0 8px 36px var(--sh-gold),0 2px 8px var(--sh-pink);
+      position:relative; overflow:hidden;
+      opacity:0; transform:translateY(28px);
+      transition:opacity .85s ease,transform .85s ease;
+      /* Efek buku fisik: shadow kiri (punggung buku) */
+      border-left:3px solid rgba(201,168,76,.25);
+    }
+    #letter::before { /* garis emas atas */
+      content:''; position:absolute; top:0; left:0; right:0; height:4px;
+      background:linear-gradient(90deg,var(--pk-100),var(--gd-300),var(--pk-100));
+    }
+    #letter.show { opacity:1; transform:translateY(0); }
+
+    .letter-head {
+      font-family:'Dancing Script',cursive;
+      font-size:1.15rem; color:var(--gd-500);
+      text-align:center; margin-bottom:10px;
+    }
+
+    /* Nomor halaman surat */
+    #ltr-page-num {
+      text-align:center; font-size:.7rem; color:var(--tx-300);
+      letter-spacing:1.5px; margin-bottom:10px;
+      min-height:14px; font-style:italic;
+    }
+
+    /* Garis tipis pemisah atas konten */
+    .ltr-rule {
+      border:none; border-top:1px solid rgba(201,168,76,.18);
+      margin:0 0 12px;
+    }
+
+    /* ═══ Area konten + animasi page‑flip ═══ */
+    #ltr-stage {
+      perspective:1000px;
+      min-height:200px;
+    }
+    #ltr-body-wrap {
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+      will-change:transform,opacity;
+    }
+
+    /* Animasi balik halaman (keluar) */
+    #ltr-body-wrap.flip-out {
+      animation:pfOut .42s ease-in forwards;
+    }
+    /* Animasi balik halaman (masuk) */
+    #ltr-body-wrap.flip-in {
+      animation:pfIn .42s ease-out forwards;
+    }
+    @keyframes pfOut {
+      from { transform:perspective(900px) rotateY(0deg);   opacity:1; }
+      to   { transform:perspective(900px) rotateY(-90deg); opacity:0; }
+    }
+    @keyframes pfIn {
+      from { transform:perspective(900px) rotateY(90deg);  opacity:0; }
+      to   { transform:perspective(900px) rotateY(0deg);   opacity:1; }
+    }
+
+    /* Teks body surat */
+    #ltr-body {
+      white-space:pre-line;
+      font-size:.88rem; color:var(--tx-700);
+      line-height:2.05; font-style:italic;
+      /* min-height dikunci agar tinggi kartu tidak "naik-turun"
+         selama teks diketik → posisi surat tetap stabil di tengah */
+      min-height:190px; display:block;
+    }
+
+    /* Kursor ketik */
+    #typing-cur {
+      display:inline-block; width:2px; height:1em;
+      background:var(--pk-500);
+      animation:cur-blink .65s step-end infinite;
+      vertical-align:text-bottom; margin-left:1px;
+    }
+    @keyframes cur-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* Teks status "membalik halaman..." */
+    #ltr-flip-txt {
+      text-align:center; font-size:.72rem; color:var(--tx-300);
+      font-style:italic; margin-top:10px;
+      min-height:18px; opacity:0;
+      transition:opacity .3s ease;
+    }
+    #ltr-flip-txt.show { opacity:1; }
+
+    /* Tanda tangan surat (halaman terakhir) */
+    #ltr-sign {
+      display:none; text-align:right; margin-top:16px;
+      font-family:'Dancing Script',cursive;
+      font-size:1.0rem; color:var(--tx-500); line-height:1.6;
+    }
+
+    /* Tombol lanjut ke galeri */
+    #to-gallery {
+      display:none; margin-top:20px;
+      padding:14px 36px;
+      background:linear-gradient(135deg,var(--gd-300),var(--gd-500));
+      color:#fff; border:none; border-radius:32px;
+      font-family:'Dancing Script',cursive; font-size:1.15rem;
+      cursor:pointer;
+      box-shadow:0 6px 24px var(--sh-gold);
+      animation:btn-glow 2s ease-in-out infinite;
+    }
+    #to-gallery.show { display:inline-block; }
+    #to-gallery:active { transform:scale(.96); }
+    @keyframes btn-glow {
+      0%,100%{box-shadow:0 6px 24px var(--sh-gold)}
+      50%{box-shadow:0 6px 44px rgba(201,168,76,.65)}
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       ★ HALAMAN 4 — GALERI POLAROID
+    ══════════════════════════════════════════════════════════ */
+    #p4 {
+      background:linear-gradient(145deg,var(--pk-50) 0%,var(--cr-100) 100%);
+      overflow:hidden;
+    }
+    .gal-title {
+      font-family:'Dancing Script',cursive;
+      font-size:clamp(1.4rem,5.5vw,1.75rem);
+      color:var(--tx-700); text-align:center; margin-bottom:2px;
+    }
+    .gal-sub {
+      font-size:.72rem; color:var(--tx-300);
+      text-align:center; margin-bottom:24px; font-style:italic;
+    }
+    #pol-stack {
+      position:relative; width:220px; height:275px;
+      margin:0 auto; touch-action:none;
+    }
+    .pol-card {
+      position:absolute; width:200px;
+      background:#fff; border-radius:3px;
+      padding:10px 10px 50px;
+      box-shadow:0 8px 28px rgba(0,0,0,.13),0 2px 6px rgba(0,0,0,.07);
+      left:50%; top:50%;
+      cursor:grab; user-select:none; touch-action:none;
+    }
+    .pol-card.top {
+      box-shadow:0 16px 48px rgba(0,0,0,.20),0 4px 12px rgba(0,0,0,.10); }
+    .pol-card:active { cursor:grabbing; }
+    .pol-img {
+      width:100%; aspect-ratio:1/1;
+      object-fit:cover; display:block;
+      background:var(--cr-200); border-radius:2px;
+    }
+    .pol-cap {
+      position:absolute; bottom:8px; left:10px; right:10px;
+      text-align:center; font-size:.72rem; color:var(--tx-500);
+      font-style:italic; line-height:1.4;
+    }
+    .swipe-hint {
+      font-size:.72rem; color:var(--tx-300);
+      text-align:center; margin-top:18px; font-style:italic;
+      animation:hint-fade 2s ease-in-out infinite;
+    }
+    @keyframes hint-fade { 0%,100%{opacity:1} 50%{opacity:.3} }
+    #p-counter {
+      font-size:.78rem; color:var(--tx-500);
+      text-align:center; margin-top:6px;
+    }
+    .p4-close {
+      font-family:'Dancing Script',cursive;
+      font-size:1.0rem; color:var(--tx-500);
+      text-align:center; padding:12px 32px;
+      line-height:1.9; margin-top:6px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     FIREWORKS CANVAS
+     Aktif setelah game Nailong selesai dan TERUS BERTAHAN
+     sebagai latar di semua halaman berikutnya.
+══════════════════════════════════════════════════════════ -->
+<canvas id="fw-canvas"></canvas>
+
+<!-- ══════════════════════════════════════════════════════════
+     ★★★ EDIT — Musik latar romantis ★★★
+     Ganti YOUR_ROMANTIC_SONG_URL dengan URL lagumu (.mp3/.ogg)
+══════════════════════════════════════════════════════════ -->
+<audio id="bg-music" loop preload="auto">
+  <source src="laguselamatultah.mp3" type="audio/mpeg">
+  <source src="YOUR_ROMANTIC_SONG_URL.ogg" type="audio/ogg">
+</audio>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     HALAMAN 1 — MINIGAME NAILONG
+══════════════════════════════════════════════════════════ -->
+<div id="p1" class="page active">
+
+  <!-- Dekorasi latar -->
+  <span class="bg-deco" style="top:7%;left:5%;--d:3.5s;--dl:0s;--r0:-12deg;--r1:8deg;--fs:1.6rem">🌸</span>
+  <span class="bg-deco" style="top:4%;left:52%;--d:4.2s;--dl:.5s;--r0:-5deg;--r1:11deg;--fs:1.1rem">✨</span>
+  <span class="bg-deco" style="top:12%;right:7%;--d:3.8s;--dl:.3s;--r0:5deg;--r1:-11deg;--fs:1.5rem">💕</span>
+  <span class="bg-deco" style="top:55%;left:3%;--d:4.5s;--dl:.9s;--r0:-8deg;--r1:12deg;--fs:1.4rem">🌷</span>
+  <span class="bg-deco" style="bottom:16%;right:5%;--d:3.2s;--dl:.2s;--r0:10deg;--r1:-6deg;--fs:1.6rem">🎀</span>
+  <span class="bg-deco" style="bottom:28%;left:6%;--d:4.8s;--dl:1s;--r0:-5deg;--r1:8deg;--fs:1.1rem">⭐</span>
+  <span class="bg-deco" style="top:35%;right:4%;--d:4.0s;--dl:.7s;--r0:-10deg;--r1:6deg;--fs:1.3rem">🎵</span>
+  <span class="bg-deco" style="bottom:40%;right:8%;--d:3.6s;--dl:1.2s;--r0:6deg;--r1:-12deg;--fs:1.2rem">🍰</span>
+
+  <!-- Indikator escape pojok kanan atas -->
+  <div id="indicator">
+    <span class="ind-label">Nailong kabur</span>
+    <span class="ind-count" id="ind-val">0 / 5</span>
+  </div>
+
+  <!-- Instruksi -->
+  <p id="instr">Pencet perut Nailongnyaa saaayangggg!</p>
+
+  <!--
+    ★★★ EDIT — Gambar Nailong ★★★
+    Ganti src di bawah dengan URL/path gambar Nailong kamu.
+    Gunakan .png transparan agar terlihat bagus di atas background.
+    Jika gambar gagal dimuat, emoji 🐉 akan muncul otomatis.
+  -->
+  <div id="nailong">
+    <img id="nailong-img"
+         src="nailong.png"
+         alt="Nailong"
+         onerror="this.style.display='none';
+                  document.getElementById('nailong-fb').style.display='block';">
+    <div id="nailong-fb">🐉</div>
+  </div>
+
+</div><!-- /p1 -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     HALAMAN 2 — KUE ULANG TAHUN + JEDA 10 DETIK + TIUP LILIN
+══════════════════════════════════════════════════════════ -->
+<div id="p2" class="page">
+
+  <!-- Overlay hitungan mundur (3-2-1) -->
+  <div id="cd-overlay">
+    <div id="countdown"></div>
+  </div>
+
+  <h1 class="bday-title" id="bday-title">Cheers to 19 Years of You, My Love! 🎉</h1>
+
+  <!-- SVG Kue -->
+  <div id="cake-wrap">
+    <svg id="cake-svg" viewBox="0 0 220 212" xmlns="http://www.w3.org/2000/svg">
+      <!-- Piring -->
+      <ellipse cx="110" cy="196" rx="96" ry="9" fill="#F0D8C0" opacity=".5"/>
+      <!-- Tingkat bawah -->
+      <rect x="20" y="140" width="180" height="56" rx="10" fill="#FFB7C5"/>
+      <rect x="20" y="140" width="180" height="14" rx="8" fill="#FFD6DF"/>
+      <circle cx="52"  cy="152" r="5.5" fill="white" opacity=".75"/>
+      <circle cx="80"  cy="147" r="4.5" fill="white" opacity=".6"/>
+      <circle cx="110" cy="152" r="5.5" fill="white" opacity=".75"/>
+      <circle cx="140" cy="147" r="4.5" fill="white" opacity=".6"/>
+      <circle cx="168" cy="152" r="5.5" fill="white" opacity=".75"/>
+      <text x="88"  y="176" font-size="10" opacity=".6">🌸</text>
+      <text x="118" y="176" font-size="10" opacity=".6">🌸</text>
+      <!-- Tingkat atas -->
+      <rect x="40" y="95" width="140" height="48" rx="9" fill="#FFD6DF"/>
+      <rect x="40" y="95" width="140" height="12" rx="7" fill="#FFF0F5"/>
+      <circle cx="72"  cy="106" r="4"   fill="white" opacity=".7"/>
+      <circle cx="100" cy="102" r="3.5" fill="white" opacity=".6"/>
+      <circle cx="128" cy="106" r="4"   fill="white" opacity=".7"/>
+      <circle cx="156" cy="102" r="3.5" fill="white" opacity=".6"/>
+      <!-- Topping krim -->
+      <path d="M42,95 Q58,76 76,90 Q92,72 110,86 Q128,72 144,90 Q162,76 178,95 Z" fill="white" opacity=".92"/>
+      <text x="49"  y="91" font-size="9" fill="#C9A84C" opacity=".9">✦</text>
+      <text x="88"  y="86" font-size="9" fill="#FFB7C5" opacity=".9">✦</text>
+      <text x="126" y="86" font-size="9" fill="#C9A84C" opacity=".9">✦</text>
+      <text x="162" y="91" font-size="9" fill="#FFB7C5" opacity=".9">✦</text>
+      <!-- Lilin "1" -->
+      <rect x="74" y="55" width="16" height="40" rx="5" fill="#C9A84C"/>
+      <rect x="74" y="55" width="16" height="9"  rx="4" fill="#F0D060"/>
+      <path d="M74,67 Q82,64 90,67 Q82,70 74,67" fill="none" stroke="white" stroke-width="1" opacity=".55"/>
+      <path d="M74,78 Q82,75 90,78 Q82,81 74,78" fill="none" stroke="white" stroke-width="1" opacity=".55"/>
+      <line x1="82" y1="55" x2="82" y2="47" stroke="#5C3D2E" stroke-width="1.5" stroke-linecap="round"/>
+      <g id="f1" class="flame">
+        <ellipse cx="82" cy="41"   rx="5.5" ry="8"   fill="#FFD700" opacity=".9"/>
+        <ellipse cx="82" cy="43.5" rx="3.5" ry="5.5" fill="#FF8C00"/>
+        <ellipse cx="82" cy="46"   rx="2"   ry="3"   fill="#FF4500"/>
+      </g>
+      <g id="sm1" class="smoke">
+        <ellipse cx="82" cy="38" rx="3" ry="4" fill="#999" opacity=".5"/>
+        <ellipse cx="83" cy="30" rx="4" ry="5" fill="#bbb" opacity=".3"/>
+      </g>
+      <text x="82" y="83" text-anchor="middle" font-size="14" font-weight="bold"
+            fill="white" font-family="Georgia,serif" opacity=".9">1</text>
+      <!-- Lilin "9" -->
+      <rect x="130" y="55" width="16" height="40" rx="5" fill="#FF8FAB"/>
+      <rect x="130" y="55" width="16" height="9"  rx="4" fill="#FFD6DF"/>
+      <path d="M130,67 Q138,64 146,67 Q138,70 130,67" fill="none" stroke="white" stroke-width="1" opacity=".55"/>
+      <path d="M130,78 Q138,75 146,78 Q138,81 130,78" fill="none" stroke="white" stroke-width="1" opacity=".55"/>
+      <line x1="138" y1="55" x2="138" y2="47" stroke="#5C3D2E" stroke-width="1.5" stroke-linecap="round"/>
+      <g id="f2" class="flame">
+        <ellipse cx="138" cy="41"   rx="5.5" ry="8"   fill="#FFD700" opacity=".9"/>
+        <ellipse cx="138" cy="43.5" rx="3.5" ry="5.5" fill="#FF8C00"/>
+        <ellipse cx="138" cy="46"   rx="2"   ry="3"   fill="#FF4500"/>
+      </g>
+      <g id="sm2" class="smoke">
+        <ellipse cx="138" cy="38" rx="3" ry="4" fill="#999" opacity=".5"/>
+        <ellipse cx="139" cy="30" rx="4" ry="5" fill="#bbb" opacity=".3"/>
+      </g>
+      <text x="138" y="83" text-anchor="middle" font-size="14" font-weight="bold"
+            fill="white" font-family="Georgia,serif" opacity=".9">9</text>
+    </svg>
+  </div><!-- /cake-wrap -->
+
+  <!-- Instruksi + progress bar 10 detik jeda baca -->
+  <p class="cake-instr" id="cake-instr">
+    Yuk buat permintaan dulu! 🌟<br>
+    Tiup lilin dalam hitungan ketiga ya...
+  </p>
+
+  <!-- Progress bar visual hitungan mundur 10 detik -->
+  <div id="read-bar-wrap">
+    <div id="read-bar"></div>
+  </div>
+  <p id="read-hint">✨ siap-siap... ✨</p>
+
+  <!-- Status mikrofon -->
+  <p id="mic-txt">
+    🎙️ <span class="mic-wave">〰️</span> Mendengarkan tiupan kamu...
+  </p>
+
+  <!-- Tombol fallback jika mic error -->
+  <button id="fbk-btn" onclick="extinguishCandles()">
+    🕯️ Matikan Lilin Manual
+  </button>
+
+</div><!-- /p2 -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     HALAMAN 3 — SURAT CINTA (SISTEM BUKU BERPAGINA)
+══════════════════════════════════════════════════════════ -->
+<div id="p3" class="page">
+
+  <!-- ── Panggung amplop: selalu pas di tengah layar ── -->
+  <div id="env-stage">
+    <div id="env-wrap">
+      <svg viewBox="0 0 190 150" xmlns="http://www.w3.org/2000/svg">
+        <!-- Badan amplop -->
+        <rect x="4" y="28" width="182" height="98" rx="9"
+              fill="#FFF0F5" stroke="#FFD6DF" stroke-width="2"/>
+
+        <!-- Lipatan belakang (memberi kesan rongga di dalam amplop) -->
+        <polygon points="4,28 95,86 186,28" fill="#FFE4EC"/>
+
+        <!-- ❤ Love yang naik keluar dari amplop (tersembunyi di balik flap) -->
+        <g id="env-heart">
+          <path d="M95 92 C95 92 74 77 74 64 C74 55 80 50 87 50
+                   C91 50 94 52 95 55 C96 52 99 50 103 50
+                   C110 50 116 55 116 64 C116 77 95 92 95 92 Z"
+                fill="#FF8FAB"/>
+          <path d="M95 92 C95 92 74 77 74 64 C74 55 80 50 87 50
+                   C91 50 94 52 95 55 C96 52 99 50 103 50
+                   C110 50 116 55 116 64 C116 77 95 92 95 92 Z"
+                fill="none" stroke="#E06080" stroke-width="1.2" opacity=".45"/>
+          <circle cx="82" cy="60" r="3" fill="#fff" opacity=".55"/>
+        </g>
+
+        <!-- Lipatan depan (kantong bawah + sisi) -->
+        <polygon points="4,126 95,80 186,126"
+                 fill="#FFE4EC" stroke="#FFD6DF" stroke-width="1.5"/>
+        <polygon points="4,28 95,84 4,126"    fill="#FFD6DF" opacity=".42"/>
+        <polygon points="186,28 95,84 186,126" fill="#FFD6DF" opacity=".42"/>
+
+        <!-- Flap atas — berputar terbuka ke atas (class .open) -->
+        <g id="env-flap">
+          <polygon points="4,28 95,88 186,28"
+                   fill="#FFB7C5" stroke="#FF8FAB" stroke-width="1.5"/>
+          <g class="env-seal">
+            <circle cx="95" cy="46" r="13" fill="#FFE4EC" opacity=".95"/>
+            <text x="95" y="51" font-size="14" text-anchor="middle">💌</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div><!-- /env-stage -->
+
+  <div id="p3-scroll">
+    <!-- Kartu surat buku berpagina -->
+    <div id="letter">
+      <div class="letter-head">💕 Untuk Kekasihku Tersaayanggg 💕</div>
+
+      <!-- Nomor halaman surat (tersembunyi jika hanya 1 halaman) -->
+      <div id="ltr-page-num"></div>
+
+      <hr class="ltr-rule">
+
+      <!-- Area konten surat dengan efek page-flip -->
+      <div id="ltr-stage">
+        <div id="ltr-body-wrap">
+          <!--
+            Teks surat diketik huruf demi huruf oleh JS.
+            Setiap 40 kata, halaman otomatis berganti dengan
+            animasi flip 3D dan typing effect dilanjutkan.
+          -->
+          <span id="ltr-body"></span><span id="typing-cur"></span>
+        </div>
+      </div>
+
+      <!-- Status "membalik halaman..." -->
+      <div id="ltr-flip-txt"></div>
+
+      <!--
+        ★★★ EDIT — Nama pengirim surat ★★★
+        Ganti [ NAMA_KAMU ] dengan namamu.
+      -->
+      <div id="ltr-sign">
+        Dengan segenap cinta,<br>[ Ahmooo ] 💕
+      </div>
+    </div><!-- /letter -->
+
+    <!-- Tombol ke galeri foto (muncul HANYA setelah seluruh surat selesai diketik) -->
+    <button id="to-gallery" onclick="showPage('p4')">
+      Ada sesuatu di sini ✨
+    </button>
+
+  </div><!-- /p3-scroll -->
+</div><!-- /p3 -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     HALAMAN 4 — GALERI FOTO POLAROID
+══════════════════════════════════════════════════════════ -->
+<div id="p4" class="page">
+
+  <h2 class="gal-title">📸 ahh gokk gokkk 📸</h2>
+  <p class="gal-sub">Geser kartu untuk melihat lainnyaa ✨</p>
+
+  <!-- Tumpukan polaroid — dibangun dinamis via JS -->
+  <div id="pol-stack"></div>
+
+  <p class="swipe-hint">← Swipe / Geser →</p>
+  <p id="p-counter"></p>
+
+  <!--
+    ★★★ EDIT — Pesan penutup galeri ★★★
+    Ganti teks di bawah sesuai keinginanmu.
+  -->
+  <p class="p4-close">
+    Terima kasih sudah ada di hidupku 💕<br>
+    I love you to the moon and back 🌙✨
+  </p>
+
+</div><!-- /p4 -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════ -->
+<script>
+/* ════════════════════════════════════════════════════════════
+   ★★★★★  BAGIAN YANG PERLU DIEDIT — MULAI DI SINI  ★★★★★
+════════════════════════════════════════════════════════════ */
+
+/*
+  TEKS SURAT CINTA
+  ──────────────────────────────────────────────────────────
+  Tulis suratmu di dalam backtick ` ... `.
+  Gunakan baris kosong untuk paragraf baru.
+  Sistem akan memotong otomatis setiap 40 kata (satu halaman),
+  lalu membalik ke halaman berikutnya dengan animasi buku.
+*/
+const LOVE_LETTER_TEXT =
+`Awww cwe aku dah genap 19 tahun….🥳🎉
+
+Ghibooo tauu??? Kehadiran ghiboo
+sangatt berarti buat akuuuu
+membuat hari-hariku menjadi lebih berwarna
+
+Di hari yang bermakna ini,
+aku ingin ghibooo tahu betapa
+bersyukurnya aku memilikimu saayangg 🌸
+
+Makanya aku mau ghibooo bersyukur...
+Atas segala yang diberikan pada ghibooo,
+akuu ngk mau ghiboo menyesal atau ngk bersyukur 🤗
+
+Semoga di usiamu yang ke-19 ini,
+Kebaikan menyertai ghiboo dan keluargaa
+Akuu ngk mau kamuu sedih teruss sayaangg 😥
+
+Akuu bangga dengan muu. Selaluu.
+Dan aku akan terus di sini,
+menemani setiap langkah muuu sayaangg🤗
+
+Selamat ulang tahun, cintaku 🎂
+Maaf yaa kalau belum bisa kasih apaa apaa
+Aku hanya bisa kasih doa dan harapan untukmuu
+
+Jangan sesekali membenci
+hari dan bulan spesial ini yaaa..🤗
+
+Happy 19th Birthday, My Love! 🥳🥳🥳
+I love You So Much Giboooo 🤗😘🌹🤍
+Mmuaacchhhh 10000000x 😘😘😘🌹🤍`;
+
+
+/*
+  FOTO GALERI POLAROID
+  ──────────────────────────────────────────────────────────
+  Ganti src dengan URL atau path foto kenangan kalian.
+  Ganti caption dengan catatan manis / tanggalnya.
+  Tambah atau kurangi objek { src, caption } sesuai kebutuhan.
+*/
+const PHOTOS = [
+  {
+    // ★★★ EDIT — URL foto 1 ★★★
+    src: "Foto1.jpeg",
+    // ★★★ EDIT — Caption foto 1 ★★★
+    caption: "💕 Aku suka cara kamu tersenyum... ✨"
+  },
+  {
+    // ★★★ EDIT — URL foto 2 ★★★
+    src: "Foto2.jpeg",
+    // ★★★ EDIT — Caption foto 2 ★★★
+    caption: "🍭 Senyummu manis sekalii..."
+  },
+  {
+    // ★★★ EDIT — URL foto 3 ★★★
+    src: "Foto3.jpeg",
+    // ★★★ EDIT — Caption foto 3 ★★★
+    caption: "⛱ Dapat saat bersantai di pantai"
+  },
+  {
+    // ★★★ EDIT — URL foto 4 ★★★
+    src: "Foto4.jpeg",
+    // ★★★ EDIT — Caption foto 4 ★★★
+    caption: "🎀 Andai ini ngk diedit tetap cantik"
+  },
+  {
+    // ★★★ EDIT — URL foto 5 ★★★
+    src: "Foto5.jpeg",
+    // ★★★ EDIT — Caption foto 5 ★★★
+    caption: "📌 Cwe aku cantik sekali "
+  },
+  {
+    // ★★★ EDIT — URL foto 5 ★★★
+    src: "Foto6.jpeg",
+    // ★★★ EDIT — Caption foto 5 ★★★
+    caption: "💏 Boboo pun tetap cantik ✨"
+  }
+];
+
+/* ════════════════════════════════════════════════════════════
+   NAVIGASI HALAMAN
+════════════════════════════════════════════════════════════ */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById(id);
+  if (pg) pg.classList.add('active');
+  if (id === 'p4') setTimeout(buildPolaroids, 300);
+}
+
+/* ════════════════════════════════════════════════════════════
+   SISTEM SUARA — Web Audio API (tanpa file eksternal)
+════════════════════════════════════════════════════════════ */
+let _ac = null;
+function getAC() {
+  if (!_ac) _ac = new (window.AudioContext || window.webkitAudioContext)();
+  if (_ac.state === 'suspended') _ac.resume();
+  return _ac;
+}
+
+function sfxBoing() {
+  try {
+    const c = getAC(), o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination); o.type = 'sine';
+    o.frequency.setValueAtTime(420, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(180, c.currentTime + .28);
+    g.gain.setValueAtTime(.42, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001, c.currentTime + .38);
+    o.start(); o.stop(c.currentTime + .38);
+  } catch(e) {}
+}
+
+function sfxTada() {
+  try {
+    const c = getAC();
+    [523,659,784,1047].forEach((f,i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.type = 'triangle'; o.frequency.value = f;
+      const t = c.currentTime + i * .11;
+      g.gain.setValueAtTime(.28, t);
+      g.gain.exponentialRampToValueAtTime(.001, t + .42);
+      o.start(t); o.stop(t + .42);
+    });
+  } catch(e) {}
+}
+
+function sfxBlow() {
+  try {
+    const c = getAC();
+    const buf = c.createBuffer(1, c.sampleRate * .5, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = c.createBufferSource(); src.buffer = buf;
+    const flt = c.createBiquadFilter(); flt.type = 'bandpass'; flt.frequency.value = 900;
+    const g = c.createGain();
+    g.gain.setValueAtTime(.3, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001, c.currentTime + .5);
+    src.connect(flt); flt.connect(g); g.connect(c.destination);
+    src.start(); src.stop(c.currentTime + .5);
+  } catch(e) {}
+}
+
+/* ════════════════════════════════════════════════════════════
+   BG MUSIC — mengalun sejak kue ulang tahun muncul, sebelum
+   lilin ditiup, dan terus berbunyi sampai akhir (halaman galeri).
+   • loop = true → bila durasi lagu lebih pendek dari alurnya,
+     lagu otomatis mengulang dari awal terus-menerus
+   • fade-in lembut 1.6 detik supaya tidak mengagetkan
+   • jika autoplay diblokir browser, dicoba lagi saat layar disentuh
+════════════════════════════════════════════════════════════ */
+let musicOn = false;
+
+function startMusic() {
+  const m = document.getElementById('bg-music');
+  if (!m || musicOn) return;
+  musicOn = true;
+
+  m.loop   = true;   // durasi lagu kurang? ulang terus sampai website selesai
+  m.volume = 0;      // mulai senyap, lalu fade-in
+
+  const FADE_MS = 1600, TARGET_VOL = .70;
+  let faded = false;
+
+  function fadeIn() {
+    if (faded) return; faded = true;
+    const t0 = performance.now();
+    (function step(now) {
+      const p = Math.min((now - t0) / FADE_MS, 1);
+      m.volume = TARGET_VOL * p;
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+
+  function play() {
+    m.play().then(fadeIn).catch(() => {
+      /* Autoplay ditolak → coba sekali lagi pada sentuhan pertama user */
+      let done = false;
+      const retry = () => {
+        if (done) return; done = true;
+        m.play().then(fadeIn).catch(() => {});
+      };
+      document.addEventListener('pointerdown', retry, { once:true });
+      document.addEventListener('touchstart',  retry, { once:true });
+      document.addEventListener('keydown',     retry, { once:true });
+    });
+  }
+  play();
+}
+
+/* ════════════════════════════════════════════════════════════
+   HALAMAN 1 — LOGIKA MINIGAME NAILONG
+════════════════════════════════════════════════════════════ */
+const $nailong = document.getElementById('nailong');
+const $indVal  = document.getElementById('ind-val');
+const $instr   = document.getElementById('instr');
+let nClicks = 0, N_MOVES = 5, gameOn = false;
+
+function nailongCenter(animate) {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  $nailong.style.transition = animate
+    ? 'left .52s cubic-bezier(.68,-.55,.27,1.55),top .52s cubic-bezier(.68,-.55,.27,1.55)'
+    : 'none';
+  $nailong.style.left = (vw / 2 - 80) + 'px';
+  $nailong.style.top  = (vh / 2 - 80) + 'px';
+}
+
+function nailongScatter() {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const mg = 100, cx = vw/2 - 80, cy = vh/2 - 80;
+  let x, y, t = 0;
+  do {
+    x = mg + Math.random() * (vw - mg*2 - 160);
+    y = mg + Math.random() * (vh - mg*2 - 160);
+    t++;
+  } while (Math.abs(x-cx) < 85 && Math.abs(y-cy) < 85 && t < 15);
+  $nailong.style.transition =
+    'left .52s cubic-bezier(.68,-.55,.27,1.55),top .52s cubic-bezier(.68,-.55,.27,1.55)';
+  $nailong.style.left = x + 'px';
+  $nailong.style.top  = y + 'px';
+}
+
+function nailongBounce() {
+  const img = document.getElementById('nailong-img');
+  const fb  = document.getElementById('nailong-fb');
+  const el  = img.style.display === 'none' ? fb : img;
+  el.classList.remove('n-hit'); void el.offsetWidth; el.classList.add('n-hit');
+  setTimeout(() => el.classList.remove('n-hit'), 380);
+}
+
+function popEmoji(x, y) {
+  const list = ['💥','✨','🌟','💫','😆','🐉','💕','🎉','🌸','⭐','🎀'];
+  const el = document.createElement('span');
+  el.className = 'pop-fx';
+  el.textContent = list[Math.floor(Math.random() * list.length)];
+  el.style.left = (x - 18) + 'px'; el.style.top = (y - 18) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+function onNailongTap(e) {
+  e.preventDefault();
+  const rect = $nailong.getBoundingClientRect();
+  if (!gameOn) { gameOn = true;
+    $instr.textContent = 'Tangkap Nailongnyaa taayanggg!😜'; }
+  sfxBoing(); nailongBounce();
+  popEmoji(rect.left + rect.width/2, rect.top + rect.height/2);
+  nClicks++;
+  if (nClicks <= N_MOVES) {
+    $indVal.textContent = nClicks + ' / ' + N_MOVES;
+    nailongScatter();
+    if (nClicks === N_MOVES) {
+      setTimeout(() => { nailongCenter(true);
+        $instr.textContent = 'Yokkkk tangkap sekalii lagii yokkkk....!!😅'; }, 700);
+    }
+  } else {
+    $nailong.removeEventListener('click',    onNailongTap);
+    $nailong.removeEventListener('touchend', onNailongTouch);
+    triggerFireworks();
+  }
+}
+function onNailongTouch(e) { e.preventDefault(); onNailongTap(e); }
+$nailong.addEventListener('click',    onNailongTap);
+$nailong.addEventListener('touchend', onNailongTouch, { passive:false });
+window.addEventListener('DOMContentLoaded', () => nailongCenter(false));
+window.addEventListener('resize', () => { if (nClicks === 0) nailongCenter(false); });
+
+/* ════════════════════════════════════════════════════════════
+   KEMBANG API & CONFETTI — PERSISTEN SAMPAI WEBSITE BERAKHIR
+   Efek ini dimulai setelah game Nailong dan TIDAK PERNAH BERHENTI.
+   Canvas tetap aktif di latar semua halaman berikutnya.
+════════════════════════════════════════════════════════════ */
+const fwCanvas = document.getElementById('fw-canvas');
+const fwCtx    = fwCanvas.getContext('2d');
+let fwOn = false, fwParts = [];
+
+function resizeFW() {
+  fwCanvas.width  = window.innerWidth;
+  fwCanvas.height = window.innerHeight;
+}
+resizeFW(); window.addEventListener('resize', resizeFW);
+
+class FWParticle {
+  constructor(x, y, col, isConf, isRain) {
+    this.x = x; this.y = y; this.col = col;
+    this.isConf = isConf; this.isRain = !!isRain;
+
+    if (this.isRain) {
+      /* ── Confetti hujan: jatuh pelan & bergoyang dari atas ── */
+      this.vx    = (Math.random()-.5) * 1.6;
+      this.vy    = 1.6 + Math.random() * 2.6;
+      this.alpha = .95;
+      this.decay = .0018 + Math.random() * .0014;
+      this.r     = Math.random() * 4 + 2.4;
+      this.grav  = .012;
+    } else {
+      /* ── Ledakan kembang api / confetti popper ── */
+      this.vx    = (Math.random()-.5) * (isConf ? 7 : 11);
+      this.vy    = Math.random() * -(isConf ? 9 : 13) - 2;
+      this.alpha = 1;
+      this.decay = Math.random() * .016 + .008;
+      this.r     = Math.random() * (isConf ? 5 : 3) + 1.5;
+      this.grav  = isConf ? .16 : .09;
+    }
+
+    this.rot  = Math.random() * Math.PI * 2;
+    this.rotV = (Math.random()-.5) * (this.isRain ? .09 : .22);
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    this.vy += this.grav;
+    this.vx *= this.isRain ? .995 : .985;
+    if (this.isRain) {
+      /* Goyangan lembut ala kertas confetti */
+      this.x += Math.sin(this.y * .035 + this.rot) * .55;
+      if (this.y > fwCanvas.height + 24) this.alpha = 0;
+    }
+    this.alpha -= this.decay; this.rot += this.rotV;
+  }
+  draw(c) {
+    c.save(); c.globalAlpha = Math.max(0, this.alpha);
+    c.translate(this.x, this.y); c.rotate(this.rot);
+    if (this.isConf) {
+      c.fillStyle = this.col;
+      c.fillRect(-this.r, -this.r*.5, this.r*2, this.r);
+    } else {
+      c.beginPath(); c.arc(0, 0, this.r, 0, Math.PI*2);
+      c.fillStyle = this.col; c.fill();
+    }
+    c.restore();
+  }
+}
+
+const FW_COLORS = [
+  '#FFB7C5','#FF8FAB','#FFD6DF','#C9A84C','#F0D060',
+  '#FFE066','#FF69B4','#FFD700','#FF85A2','#FFDAB9',
+  '#B4E4FF','#D4A0FF','#FFF0F5','#FFFFFF'
+];
+
+function pickFWColor() {
+  return FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
+}
+
+/* Satu ledakan kembang api + semburan confetti dari bawah */
+function launchFW() {
+  const x   = Math.random() * fwCanvas.width;
+  const y   = Math.random() * fwCanvas.height * .65;
+  const col = pickFWColor();
+  const n   = 46 + Math.floor(Math.random() * 34);
+  for (let i = 0; i < n; i++)
+    fwParts.push(new FWParticle(x, y, col, false));
+  for (let i = 0; i < 18; i++)
+    fwParts.push(new FWParticle(Math.random()*fwCanvas.width, -15, pickFWColor(), true));
+}
+
+/* Confetti yang terus jatuh dari atas layar */
+function spawnConfetti(n) {
+  for (let i = 0; i < n; i++)
+    fwParts.push(new FWParticle(
+      Math.random() * fwCanvas.width, -18, pickFWColor(), true, true));
+}
+
+let fwFrame = 0;
+function animFW() {
+  if (!fwOn) return;
+  requestAnimationFrame(animFW);
+  fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+
+  /* Hujan confetti konstan — dibatasi agar tetap ringan di HP */
+  fwFrame++;
+  if (fwFrame % 2 === 0 && fwParts.length < 620) spawnConfetti(2);
+
+  fwParts = fwParts.filter(p => p.alpha > 0);
+  fwParts.forEach(p => { p.update(); p.draw(fwCtx); });
+}
+
+/*
+  triggerFireworks()
+  ──────────────────────────────────────────────────────────
+  Dipanggil setelah klik terakhir Nailong.
+  Kembang api + hujan confetti menyala dan TERUS BERJALAN
+  (ledakan via setInterval, confetti via loop animasi).
+  Tidak ada clearInterval / clearTimeout yang menghentikannya,
+  jadi efek tetap hidup di halaman kue, surat, dan galeri
+  sampai halaman ditutup.
+*/
+function triggerFireworks() {
+  document.getElementById('p1').classList.remove('active');
+  fwCanvas.classList.add('on');
+  if (fwOn) return;              // jangan pasang loop dua kali
+  fwOn = true; animFW();
+  spawnConfetti(40);             // confetti pembuka
+
+  // Ledakan awal (5 sekaligus)
+  setTimeout(() => {
+    sfxTada();
+    for (let i = 0; i < 5; i++) setTimeout(launchFW, i * 130);
+  }, 300);
+
+  // Ledakan periodik ABADI — tidak pernah di-clearInterval
+  setInterval(launchFW, 1100);
+
+  // Tampilkan halaman kue setelah 1.9 detik
+  setTimeout(showPage2, 1900);
+}
+
+/* ════════════════════════════════════════════════════════════
+   HALAMAN 2 — KUE + JEDA BACA 10 DETIK + COUNTDOWN + TIUP
+════════════════════════════════════════════════════════════ */
+let candleOut = false;
+
+function showPage2() {
+  document.getElementById('p2').classList.add('active');
+
+  /*
+    ★ BG MUSIC mulai di sini — tepat saat kue ulang tahun muncul,
+    sebelum lilin ditiup, dan terus mengalun sampai akhir.
+  */
+  startMusic();
+
+  /*
+    Jeda baca 10 detik:
+    Progress bar menyusut selama 10 detik agar pacar
+    punya waktu melihat kue, membaca instruksi, dan
+    membuat permintaan di dalam hati sebelum tiup lilin.
+  */
+  const bar = document.getElementById('read-bar');
+  bar.style.animation = 'bar-shrink 10s linear forwards';
+
+  // Setelah 10 detik → munculkan overlay countdown 3-2-1
+  setTimeout(runCountdown, 10000);
+}
+
+function runCountdown() {
+  // Sembunyikan progress bar dan hint
+  document.getElementById('read-bar-wrap').style.opacity = '0';
+  document.getElementById('read-hint').style.opacity = '0';
+
+  const $ov    = document.getElementById('cd-overlay');
+  const $cd    = document.getElementById('countdown');
+  const $title = document.getElementById('bday-title');
+  const $ci    = document.getElementById('cake-instr');
+
+  // Tampilkan overlay, sembunyikan elemen di bawahnya
+  $ov.classList.add('show');
+  $title.style.opacity = '0'; $ci.style.opacity = '0';
+
+  let n = 3;
+  function tick() {
+    $cd.className = ''; void $cd.offsetWidth; $cd.className = 'cd-pop';
+    $cd.textContent = n > 0 ? String(n) : '🎂';
+    if (n === 0) {
+      setTimeout(() => {
+        $ov.classList.remove('show');
+        $title.style.opacity = '1'; $ci.style.opacity = '1';
+        $ci.textContent = '💨 Tiup lilinnya sekarang!';
+        activateMic();
+      }, 700);
+      return;
+    }
+    n--; setTimeout(tick, 1000);
+  }
+  tick();
+}
+
+function activateMic() {
+  const $m = document.getElementById('mic-txt');
+  const $f = document.getElementById('fbk-btn');
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    $m.textContent = '⚠️ Mic tidak tersedia. Tekan tombol di bawah.';
+    $m.classList.add('show'); $f.classList.add('show'); return;
+  }
+
+  navigator.mediaDevices.getUserMedia({ audio:true, video:false })
+    .then(stream => {
+      $m.innerHTML = '🎙️ <span class="mic-wave">〰️</span> Mendengarkan tiupan kamu...';
+      $m.classList.add('show');
+      const mAC = new (window.AudioContext || window.webkitAudioContext)();
+      const anlzr = mAC.createAnalyser();
+      anlzr.fftSize = 512; anlzr.smoothingTimeConstant = .3;
+      mAC.createMediaStreamSource(stream).connect(anlzr);
+      const data = new Uint8Array(anlzr.frequencyBinCount);
+      let det = false;
+
+      /*
+        Deteksi tiupan via volume rata-rata frekuensi.
+        Jika avg > 38 → tiupan terdeteksi.
+        Naikkan threshold (mis. 50) jika terlalu sensitif.
+        Turunkan (mis. 25) jika susah terdeteksi.
+      */
+      function listen() {
+        if (det || candleOut) return;
+        anlzr.getByteFrequencyData(data);
+        const avg = data.reduce((a,b)=>a+b,0) / data.length;
+        if (avg > 27) {
+          det = true; stream.getTracks().forEach(t=>t.stop()); mAC.close();
+          extinguishCandles();
+        } else { requestAnimationFrame(listen); }
+      }
+      listen();
+      setTimeout(() => { if (!candleOut) $f.classList.add('show'); }, 10000);
+    })
+    .catch(() => {
+      $m.textContent = '⚠️ Izin mic ditolak. Tekan tombol di bawah.';
+      $m.classList.add('show'); $f.classList.add('show');
+    });
+}
+
+function extinguishCandles() {
+  if (candleOut) return; candleOut = true; sfxBlow();
+  document.getElementById('f1').classList.add('flame-off');
+  setTimeout(() => document.getElementById('f2').classList.add('flame-off'), 150);
+  document.getElementById('sm1').classList.add('smoke-on');
+  setTimeout(() => document.getElementById('sm2').classList.add('smoke-on'), 200);
+  const $m = document.getElementById('mic-txt');
+  if ($m) $m.innerHTML = '✨ Lilin padam! Semoga permintaannya terkabul! ✨';
+  document.getElementById('fbk-btn').classList.remove('show');
+  setTimeout(() => {
+    const p2 = document.getElementById('p2');
+    p2.style.transition = 'opacity 1.3s ease'; p2.style.opacity = '0';
+    setTimeout(() => {
+      p2.classList.remove('active');
+      p2.style.opacity = ''; p2.style.transition = '';
+      showPage3();
+    }, 1300);
+  }, 2200);
+}
+
+/* ════════════════════════════════════════════════════════════
+   HALAMAN 3 — ANIMASI AMPLOP + SURAT BUKU BERPAGINA
+
+   Alur:
+   0. Amplop "pop" masuk tepat di tengah layar (CSS #p3.active #env-wrap)
+   1. ~0.85 detik: flap amplop terbuka + love ❤ naik keluar dari amplop
+   2. ~2.5 detik: amplop mengecil & menghilang,
+      kartu surat berpagina muncul tepat di tengah layar
+   3. Halaman 1 diketik huruf demi huruf
+   4. Setelah 40 kata → jeda 3 detik → "membalik halaman..." → flip
+   5. Halaman berikutnya langsung diketik dari huruf pertama
+   6. Ulangi sampai surat selesai
+   7. Tombol "Lihat Kenangan Kita" muncul
+════════════════════════════════════════════════════════════ */
+
+/* ── Split teks surat menjadi halaman ×40 kata ── */
+function splitPages(text, maxWords) {
+  /*
+    Fungsi ini memecah teks berdasarkan kata (token non-whitespace).
+    Setiap halaman memuat maksimal maxWords kata.
+    Spasi dan baris baru antar kata tetap dipertahankan
+    dari teks asli sehingga paragraf tetap terbaca rapi.
+  */
+  const matches = [...text.matchAll(/\S+/g)];
+  if (!matches.length) return [text];
+  const pages = [];
+  for (let i = 0; i < matches.length; i += maxWords) {
+    const first = matches[i];
+    const last  = matches[Math.min(i + maxWords - 1, matches.length - 1)];
+    pages.push(text.slice(first.index, last.index + last[0].length));
+  }
+  return pages;
+}
+
+let ltrPages = [], ltrIdx = 0;
+
+function showPage3() {
+  document.getElementById('p3').classList.add('active');
+
+  /* FASE 1 — flap amplop terbuka & love naik keluar dari amplop */
+  setTimeout(() => {
+    document.getElementById('env-flap').classList.add('open');
+    document.getElementById('env-heart').classList.add('rise');
+  }, 850);
+
+  /* FASE 2 — amplop mengecil & hilang, surat berpagina tampil di tengah */
+  setTimeout(() => {
+    document.getElementById('env-stage').classList.add('gone');
+    document.getElementById('letter').classList.add('show');
+
+    // Inisialisasi sistem halaman surat
+    ltrPages = splitPages(LOVE_LETTER_TEXT, 40);
+    ltrIdx   = 0;
+    updatePageNum();
+
+    // Mulai mengetik halaman pertama
+    setTimeout(() => typePage(ltrPages[0]), 600);
+  }, 2500);
+}
+
+/* Update indikator nomor halaman */
+function updatePageNum() {
+  const $el = document.getElementById('ltr-page-num');
+  if (ltrPages.length <= 1) { $el.textContent = ''; return; }
+  $el.textContent = `✦  halaman ${ltrIdx+1} dari ${ltrPages.length}  ✦`;
+}
+
+/*
+  typePage(text)
+  ──────────────────────────────────────────────────────────
+  Mengetik isi halaman surat huruf demi huruf.
+  Setelah selesai:
+    • Bukan halaman terakhir → jeda 3 detik → flip ke halaman baru
+    • Halaman terakhir       → tampilkan tanda tangan + tombol galeri
+*/
+function typePage(text) {
+  const $body = document.getElementById('ltr-body');
+  const $cur  = document.getElementById('typing-cur');
+
+  // Bersihkan konten, tampilkan kursor
+  $body.textContent = '';
+  $cur.style.display = 'inline-block';
+  $cur.style.animation = 'cur-blink .65s step-end infinite';
+
+  let idx = 0;
+
+  function next() {
+    if (idx >= text.length) {
+      // Selesai mengetik halaman ini
+      $cur.style.display = 'none';
+      const isLast = (ltrIdx === ltrPages.length - 1);
+
+      if (isLast) {
+        // Halaman terakhir: tampilkan tanda tangan dan tombol
+        setTimeout(() => {
+          document.getElementById('ltr-sign').style.display = 'block';
+          document.getElementById('to-gallery').style.display = 'inline-block';
+        }, 600);
+      } else {
+        /*
+          Jeda 3 detik untuk membaca, lalu flip halaman.
+          "Membalik halaman..." muncul di detik ke-2.5
+          agar pembaca mendapat peringatan visual sebelum flip.
+        */
+        setTimeout(() => showFlipHint(), 2500);
+        setTimeout(() => flipPage(), 3000);
+      }
+      return;
+    }
+
+    $body.textContent += text[idx++];
+
+    // Scroll ikut teks (untuk layar kecil)
+    document.getElementById('p3').scrollTop =
+      document.getElementById('p3').scrollHeight;
+
+    // Delay per karakter: lebih lama di tanda baca / baris baru
+    const ch = text[idx - 1];
+    const delay = /[\n.!?,;…]/.test(ch) ? 200 : 36;
+    setTimeout(next, delay);
+  }
+
+  setTimeout(next, 350); // jeda kecil sebelum mulai mengetik
+}
+
+/* Tampilkan petunjuk "membalik halaman..." */
+function showFlipHint() {
+  const $el = document.getElementById('ltr-flip-txt');
+  $el.textContent = '— membalik halaman... —';
+  $el.classList.add('show');
+}
+
+/* Animasi flip ke halaman berikutnya */
+function flipPage() {
+  const $wrap    = document.getElementById('ltr-body-wrap');
+  const $flipTxt = document.getElementById('ltr-flip-txt');
+
+  $flipTxt.classList.remove('show');
+
+  /* FASE 1: Halaman saat ini berputar keluar (rotateY 0 → -90°) */
+  $wrap.classList.add('flip-out');
+
+  setTimeout(() => {
+    // Update indeks dan konten
+    ltrIdx++;
+    document.getElementById('ltr-body').textContent = '';
+    updatePageNum();
+    $wrap.classList.remove('flip-out');
+
+    /* FASE 2: Halaman baru berputar masuk (rotateY 90° → 0) */
+    $wrap.classList.add('flip-in');
+
+    setTimeout(() => {
+      $wrap.classList.remove('flip-in');
+      // Langsung mulai mengetik konten halaman baru
+      typePage(ltrPages[ltrIdx]);
+    }, 420);
+
+  }, 420);
+}
+
+/* ════════════════════════════════════════════════════════════
+   HALAMAN 4 — GALERI POLAROID (SWIPE / DRAG)
+════════════════════════════════════════════════════════════ */
+let curPhoto = 0, isDrag = false, dStartX = 0, dMoveX = 0, dCard = null;
+const $polStack = document.getElementById('pol-stack');
+const $pCounter = document.getElementById('p-counter');
+
+function buildPolaroids() {
+  $polStack.innerHTML = '';
+  const total = PHOTOS.length;
+  $pCounter.textContent = (curPhoto + 1) + ' / ' + total;
+  const show = Math.min(total, 4);
+  for (let i = show - 1; i >= 0; i--) {
+    const data = PHOTOS[(curPhoto + i) % total];
+    const card = document.createElement('div');
+    card.className = 'pol-card' + (i === 0 ? ' top' : '');
+    const rot   = i === 0 ? 0 : ((i%2===0?1:-1) * i * 2.8);
+    const offY  = i * 2;
+    const scale = 1 - i * .015;
+    card.style.transform = `translate(-50%,-50%) rotate(${rot}deg) translateY(${offY}px) scale(${scale})`;
+    card.style.zIndex    = 10 - i;
+    card.style.opacity   = i > 2 ? '0' : '1';
+    const img = document.createElement('img');
+    img.className = 'pol-img'; img.src = data.src;
+    img.alt = 'Kenangan ' + (curPhoto + i + 1); img.draggable = false;
+    const cap = document.createElement('div');
+    cap.className = 'pol-cap'; cap.textContent = data.caption;
+    card.appendChild(img); card.appendChild(cap); $polStack.appendChild(card);
+    if (i === 0) attachDrag(card);
+  }
+}
+
+function attachDrag(card) {
+  card.addEventListener('mousedown',  onDS);
+  card.addEventListener('touchstart', onDS, { passive:true });
+}
+function onDS(e) {
+  isDrag = true; dCard = e.currentTarget;
+  dStartX = e.touches ? e.touches[0].clientX : e.clientX; dMoveX = 0;
+  document.addEventListener('mousemove',  onDM);
+  document.addEventListener('mouseup',    onDE);
+  document.addEventListener('touchmove',  onDM, { passive:false });
+  document.addEventListener('touchend',   onDE);
+}
+function onDM(e) {
+  if (!isDrag || !dCard) return;
+  if (e.cancelable) e.preventDefault();
+  dMoveX = (e.touches ? e.touches[0].clientX : e.clientX) - dStartX;
+  dCard.style.transition = 'none';
+  dCard.style.transform =
+    `translate(calc(-50% + ${dMoveX}px),-50%) rotate(${dMoveX*.07}deg)`;
+}
+function onDE() {
+  if (!isDrag) return; isDrag = false;
+  document.removeEventListener('mousemove',  onDM);
+  document.removeEventListener('mouseup',    onDE);
+  document.removeEventListener('touchmove',  onDM);
+  document.removeEventListener('touchend',   onDE);
+  const thresh = window.innerWidth * .28;
+  if (Math.abs(dMoveX) > thresh && dCard) {
+    const dir = dMoveX > 0 ? 1 : -1;
+    dCard.style.transition = 'transform .42s ease,opacity .42s ease';
+    dCard.style.transform =
+      `translate(calc(-50% + ${dir*window.innerWidth*1.3}px),-50%) rotate(${dir*35}deg)`;
+    dCard.style.opacity = '0';
+    setTimeout(() => { curPhoto = (curPhoto+1) % PHOTOS.length; buildPolaroids(); }, 420);
+  } else {
+    if (dCard) {
+      dCard.style.transition = 'transform .4s cubic-bezier(.25,.46,.45,.94)';
+      dCard.style.transform  = 'translate(-50%,-50%) rotate(0deg)';
+    }
+  }
+  dMoveX = 0; dCard = null;
+}
+</script>
+</body>
+</html>
